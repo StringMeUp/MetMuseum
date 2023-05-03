@@ -20,5 +20,4 @@ class DetailFragment : BaseFragment<DetailFragmentBinding>(DetailFragmentBinding
     override fun setUpViewModelBinding() {
         super.setUpViewModelBinding()
     }
-
 }

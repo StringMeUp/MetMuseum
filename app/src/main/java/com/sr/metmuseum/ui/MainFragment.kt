@@ -20,5 +20,4 @@ class MainFragment : BaseFragment<MainFragmentBinding>(MainFragmentBinding::infl
     override fun setUpViewModelBinding() {
         super.setUpViewModelBinding()
     }
-
 }
