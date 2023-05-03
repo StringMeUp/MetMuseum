@@ -11,6 +11,8 @@ buildscript {
             coroutines = "1.6.4"
             navigation = "2.5.3"
             retrofit = "2.9.0"
+            httpLogging = "4.9.3"
+            timber = "5.0.1"
         }
     }
 

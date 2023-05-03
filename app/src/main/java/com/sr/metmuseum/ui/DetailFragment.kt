@@ -3,7 +3,9 @@ package com.sr.metmuseum.ui
 import com.sr.metmuseum.R
 import com.sr.metmuseum.base.BaseFragment
 import com.sr.metmuseum.databinding.DetailFragmentBinding
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class DetailFragment : BaseFragment<DetailFragmentBinding>(DetailFragmentBinding::inflate) {
 
     override fun inflateBinding(): Class<DetailFragmentBinding> = DetailFragmentBinding::class.java
