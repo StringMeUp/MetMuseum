@@ -1,5 +1,6 @@
 package com.sr.metmuseum.ui
 
+import androidx.fragment.app.activityViewModels
 import com.sr.metmuseum.R
 import com.sr.metmuseum.base.BaseFragment
 import com.sr.metmuseum.databinding.DetailFragmentBinding
@@ -10,6 +11,7 @@ class DetailFragment : BaseFragment<DetailFragmentBinding>(DetailFragmentBinding
 
     override fun inflateBinding(): Class<DetailFragmentBinding> = DetailFragmentBinding::class.java
     override fun setContent(): Int = R.layout.detail_fragment
+    private val viewModel: MainViewModel by activityViewModels()
 
     override fun setUpView() {
         super.setUpView()
