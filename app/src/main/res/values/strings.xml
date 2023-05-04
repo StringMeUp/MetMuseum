@@ -1,3 +1,6 @@
 <resources>
     <string name="app_name">MetMuseum</string>
+    <string name="general_api_error">Ops…Something went wrong. Please try again later.</string>
+    <string name="empty_state">Oh no, nothing found! Try sth. else.</string>
+    <string name="search_hint">Search for something…</string>
 </resources>

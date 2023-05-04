@@ -8,6 +8,6 @@ open class BaseViewModel @Inject constructor() : ViewModel() {
     sealed class Resource<out T> {
         object Loading : Resource<Nothing>()
         data class Success<out T>(val data: T?) : Resource<T>()
-        data class Error(val responseCode: Int) : Resource<Nothing>()
+        data class Error(val responseCode: Int? = null) : Resource<Nothing>()
     }
 }
