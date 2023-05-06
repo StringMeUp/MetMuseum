@@ -12,6 +12,7 @@ import androidx.viewbinding.ViewBinding
 import com.sr.metmuseum.R
 import com.sr.metmuseum.databinding.MainGalleryItemBinding
 import com.sr.metmuseum.databinding.ThumbItemBinding
+import com.sr.metmuseum.ui.main.MainViewModel
 import com.sr.metmuseum.util.*
 
 val galleryDiffUtil = object : DiffUtil.ItemCallback<GalleryItem>() {
@@ -96,8 +97,8 @@ class GalleryAdapter(val listener: OnItemClickListener) : ListAdapter<GalleryIte
     override fun onCreateViewHolder(parent: android.view.ViewGroup, viewType: Int, ): RecyclerView.ViewHolder {
         val inflater = LayoutInflater.from(parent.context)
         return when (viewType) {
-            DetailViewModel.GalleryType.MAIN.ordinal -> { GalleryViewHolder(MainGalleryItemBinding.inflate(inflater, parent, false)) }
-            DetailViewModel.GalleryType.THUMB.ordinal -> { ThumbViewHolder(ThumbItemBinding.inflate(inflater, parent, false)) }
+            MainViewModel.GalleryType.MAIN.ordinal -> { GalleryViewHolder(MainGalleryItemBinding.inflate(inflater, parent, false)) }
+            MainViewModel.GalleryType.THUMB.ordinal -> { ThumbViewHolder(ThumbItemBinding.inflate(inflater, parent, false)) }
             else -> {
                 throw IllegalArgumentException("Invalid view type.")
             }
@@ -115,7 +116,7 @@ class GalleryAdapter(val listener: OnItemClickListener) : ListAdapter<GalleryIte
 
         holder.itemView.clickWithDebounce {
             val item = getItem(position)
-            if (item.type != DetailViewModel.GalleryType.MAIN) {
+            if (item.type != MainViewModel.GalleryType.MAIN) {
                listener.onItemClick(position)
             }
         }

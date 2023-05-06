@@ -1,14 +1,14 @@
 package com.sr.metmuseum.ui.detail
 
 import android.app.AlertDialog
-import androidx.fragment.app.viewModels
+import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
-import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.GridLayoutManager.SpanSizeLookup
 import com.sr.metmuseum.R
 import com.sr.metmuseum.base.BaseFragment
 import com.sr.metmuseum.databinding.DetailFragmentBinding
+import com.sr.metmuseum.ui.main.MainViewModel
 import com.sr.metmuseum.util.observeNonNull
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -18,8 +18,7 @@ class DetailFragment : BaseFragment<DetailFragmentBinding>(DetailFragmentBinding
 
     override fun inflateBinding(): Class<DetailFragmentBinding> = DetailFragmentBinding::class.java
     override fun setContent(): Int = R.layout.detail_fragment
-    private val viewModel: DetailViewModel by viewModels()
-    private val args: DetailFragmentArgs by navArgs()
+    private val viewModel: MainViewModel by activityViewModels()
 
     private var _galleryAdapter: GalleryAdapter? = null
     private val galleryAdapter: GalleryAdapter
@@ -45,7 +44,6 @@ class DetailFragment : BaseFragment<DetailFragmentBinding>(DetailFragmentBinding
     override fun setUpView() {
         super.setUpView()
         setLifecycle()
-        viewModel.getItemDetails(args.artItem.id)
         _galleryAdapter = GalleryAdapter(this)
     }
 
@@ -60,9 +58,14 @@ class DetailFragment : BaseFragment<DetailFragmentBinding>(DetailFragmentBinding
 
     override fun setUpViewModelBinding() {
         super.setUpViewModelBinding()
+        viewModel.itemId.observeNonNull(viewLifecycleOwner){
+            it?.let { viewModel.getItemDetails(it) }
+        }
+
         viewModel.galleryItems.observeNonNull(viewLifecycleOwner) {
             galleryAdapter.submitList(it)
         }
+
         viewModel.error.observeNonNull(viewLifecycleOwner) {
             if (it) showErrorDialog()
         }
@@ -70,6 +73,7 @@ class DetailFragment : BaseFragment<DetailFragmentBinding>(DetailFragmentBinding
 
     override fun onDestroyView() {
         super.onDestroyView()
+        viewModel.invalidateGallery()
         _alert = null
         _galleryAdapter = null
     }
@@ -92,6 +96,7 @@ class DetailFragment : BaseFragment<DetailFragmentBinding>(DetailFragmentBinding
                 .setMessage(R.string.alert_message)
                 .setPositiveButton(R.string.ok) { _, _ ->
                     findNavController().apply {
+                        viewModel.invalidate()
                         popBackStack()
                         navigateUp()
                     }

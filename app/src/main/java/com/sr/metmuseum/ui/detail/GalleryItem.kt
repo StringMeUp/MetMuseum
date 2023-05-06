@@ -1,6 +1,7 @@
 package com.sr.metmuseum.ui.detail
 
 import android.os.Parcelable
+import com.sr.metmuseum.ui.main.MainViewModel
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
@@ -17,5 +18,5 @@ data class GalleryItem(
     val artistEndDate: String? = null,
     val artistWikidataUrl: String? = null,
     val city: String? = null,
-    val type: DetailViewModel.GalleryType = DetailViewModel.GalleryType.MAIN
+    val type: MainViewModel.GalleryType = MainViewModel.GalleryType.MAIN
 ) : Parcelable

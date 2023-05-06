@@ -1,6 +1,6 @@
 package com.sr.metmuseum.ui.main
 
-import androidx.fragment.app.viewModels
+import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
@@ -20,7 +20,7 @@ class MainFragment : BaseFragment<MainFragmentBinding>(MainFragmentBinding::infl
 
     override fun inflateBinding(): Class<MainFragmentBinding> = MainFragmentBinding::class.java
     override fun setContent(): Int = R.layout.main_fragment
-    private val viewModel: MainViewModel by viewModels()
+    private val viewModel: MainViewModel by activityViewModels()
 
     private var _idsAdapter: IdsAdapter? = null
     private val idsAdapter: IdsAdapter
@@ -31,7 +31,8 @@ class MainFragment : BaseFragment<MainFragmentBinding>(MainFragmentBinding::infl
         setLifecycle()
         _idsAdapter = IdsAdapter { item ->
             if (item.type == MainViewModel.ObjectType.ART) {
-                findNavController().navigate(MainFragmentDirections.actionDetail(item))
+                viewModel.setItemId(item.id)
+                findNavController().navigate(MainFragmentDirections.actionDetail())
             }
         }
     }

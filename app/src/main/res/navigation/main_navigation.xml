@@ -25,8 +25,5 @@
         android:name="com.sr.metmuseum.ui.detail.DetailFragment"
         android:label="DetailFragment"
         tools:layout="@layout/detail_fragment" >
-        <argument
-            android:name="artItem"
-            app:argType="com.sr.metmuseum.ui.main.ArtItem" />
     </fragment>
 </navigation>

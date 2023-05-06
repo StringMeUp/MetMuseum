@@ -10,8 +10,8 @@ import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.Target
 import com.sr.metmuseum.R
 import com.sr.metmuseum.models.ObjectDetail
-import com.sr.metmuseum.ui.detail.DetailViewModel
 import com.sr.metmuseum.ui.detail.GalleryItem
+import com.sr.metmuseum.ui.main.MainViewModel
 
 fun ObjectDetail.toGalleryItems(): MutableList<GalleryItem> {
     return GalleryItem(
@@ -37,7 +37,7 @@ private fun GalleryItem.asList(): MutableList<GalleryItem> {
                 GalleryItem(
                     objectId = addImgs.hashCode(),
                     primaryImage = addImgs,
-                    type = DetailViewModel.GalleryType.THUMB)
+                    type = MainViewModel.GalleryType.THUMB)
             })
         }
     } else {
