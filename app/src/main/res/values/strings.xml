@@ -1,8 +1,17 @@
 <resources>
     <string name="app_name">MetMuseum</string>
     <string name="error_state">Ops…Something went wrong. Please try again later.</string>
+    <string name="error_state_gallery">Ops…Couldn\'t load image.</string>
     <string name="empty_state">Maybe try something sensible? Pal!</string>
     <string name="default_state">Enter a search term below.</string>
     <string name="search_hint">Search for something…</string>
     <string name="thumbnail_image_cd">Thumbnail image.</string>
+    <string name="title_label">Title: </string>
+    <string name="artist_label">Artist: </string>
+    <string name="department_label">Department: </string>
+    <string name="culture_label">Culture: </string>
+    <string name="period_label">Period: </string>
+    <string name="city_label">City: </string>
+    <string name="wiki_label">Wiki: </string>
+    <string name="empty_label">Unknown</string>
 </resources>

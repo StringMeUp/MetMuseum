@@ -1,14 +1,20 @@
 package com.sr.metmuseum.ui.detail
 
+import android.content.Context
+import android.text.SpannedString
 import android.view.LayoutInflater
+import androidx.core.text.buildSpannedString
+import androidx.core.text.color
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewbinding.ViewBinding
+import com.sr.metmuseum.R
 import com.sr.metmuseum.databinding.MainGalleryItemBinding
 import com.sr.metmuseum.databinding.ThumbItemBinding
 import com.sr.metmuseum.util.hide
 import com.sr.metmuseum.util.loadImage
+import com.sr.metmuseum.util.validate
 import com.sr.metmuseum.util.show
 
 val galleryDiffUtil = object : DiffUtil.ItemCallback<GalleryItem>() {
@@ -30,8 +36,32 @@ class GalleryAdapter : ListAdapter<GalleryItem, RecyclerView.ViewHolder>(gallery
 
     class GalleryViewHolder(private val binding: MainGalleryItemBinding) : BaseViewHolder(binding) {
         override fun bind(item: GalleryItem) {
+            val context = binding.root.context
+            val hColor = context.getColor(android.R.color.black)
             binding.apply {
                 loadImage(item.primaryImage, primaryImageView, { onSuccess() }, { onError() })
+                binding.descriptionTextView.text = getDescription(hColor, context, item)
+            }
+        }
+
+        private fun getDescription(
+            hColor: Int,
+            context: Context,
+            item: GalleryItem,
+        ): SpannedString {
+            return buildSpannedString {
+                color(hColor) { append(context.getString(R.string.title_label)) }
+                append(" ${item.title.validate()}\n")
+                color(hColor) { append(context.getString(R.string.artist_label)) }
+                append(" ${item.artistDisplayName.validate()} ${item.artistBeginDate.validate()} to ${item.artistEndDate.validate()}\n")
+                color(hColor) { append(context.getString(R.string.department_label)) }
+                append(" ${item.department.validate()}\n")
+                color(hColor) { append(context.getString(R.string.culture_label)) }
+                append(" ${item.culture.validate()}\n")
+                color(hColor) { append(context.getString(R.string.period_label)) }
+                append(" ${item.period.validate()}\n")
+                color(hColor) { append(context.getString(R.string.city_label)) }
+                append(" ${item.city.validate()}\n")
             }
         }
 

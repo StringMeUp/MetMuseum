@@ -14,7 +14,7 @@
             android:contentDescription="@string/thumbnail_image_cd"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/error_text_view"
             tools:src="@drawable/mr_grumpy" />
 
         <TextView
@@ -23,13 +23,13 @@
             android:layout_height="wrap_content"
             android:layout_margin="24dp"
             android:gravity="center"
-            android:text="@string/error_state"
+            android:text="@string/error_state_gallery"
             android:textSize="24sp"
             android:visibility="gone"
-            app:layout_constraintBottom_toBottomOf="@+id/primary_image_view"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            tools:visibility="visible" />
 
         <ProgressBar
             android:id="@+id/progress_bar"
@@ -43,6 +43,14 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             tools:visibility="visible" />
+
+        <TextView
+            android:id="@+id/description_text_view"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/primary_image_view" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

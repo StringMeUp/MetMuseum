@@ -48,3 +48,8 @@ fun View.hide(){
 fun View.show(){
     this.visibility = View.VISIBLE
 }
+
+fun String?.validate(): String {
+    return if (this.isNullOrBlank()) "-"
+    else this
+}

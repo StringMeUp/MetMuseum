@@ -8,6 +8,7 @@ import com.bumptech.glide.load.DataSource
 import com.bumptech.glide.load.engine.GlideException
 import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.Target
+import com.sr.metmuseum.R
 import com.sr.metmuseum.models.ObjectDetail
 import com.sr.metmuseum.ui.detail.DetailViewModel
 import com.sr.metmuseum.ui.detail.GalleryItem
@@ -53,6 +54,7 @@ fun ViewBinding.loadImage(
     Glide.with(this.root)
         .load(url)
         .centerCrop()
+        .error(R.drawable.mr_grumpy)
         .listener(object : RequestListener<Drawable> {
             override fun onLoadFailed(
                 e: GlideException?,
