@@ -8,6 +8,7 @@
     <string name="thumbnail_image_cd">Thumbnail image.</string>
     <string name="title_label">Title: </string>
     <string name="artist_label">Artist: </string>
+    <string name="lifespan_label">Lifespan: </string>
     <string name="department_label">Department: </string>
     <string name="culture_label">Culture: </string>
     <string name="period_label">Period: </string>

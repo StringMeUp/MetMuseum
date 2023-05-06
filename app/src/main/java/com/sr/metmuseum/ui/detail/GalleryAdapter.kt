@@ -49,11 +49,15 @@ class GalleryAdapter : ListAdapter<GalleryItem, RecyclerView.ViewHolder>(gallery
             context: Context,
             item: GalleryItem,
         ): SpannedString {
+            val lifeSpan = if (item.artistBeginDate.validate() == "-" || item.artistEndDate.validate() == "-") context.getString(R.string.empty_label)
+            else "${item.artistBeginDate.validate()} to ${item.artistEndDate.validate()}"
             return buildSpannedString {
                 color(hColor) { append(context.getString(R.string.title_label)) }
                 append(" ${item.title.validate()}\n")
                 color(hColor) { append(context.getString(R.string.artist_label)) }
-                append(" ${item.artistDisplayName.validate()} ${item.artistBeginDate.validate()} to ${item.artistEndDate.validate()}\n")
+                append(" ${item.artistDisplayName.validate()}\n")
+                color(hColor) { append(context.getString(R.string.lifespan_label)) }
+                append(" $lifeSpan\n")
                 color(hColor) { append(context.getString(R.string.department_label)) }
                 append(" ${item.department.validate()}\n")
                 color(hColor) { append(context.getString(R.string.culture_label)) }
