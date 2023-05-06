@@ -12,10 +12,7 @@ import androidx.viewbinding.ViewBinding
 import com.sr.metmuseum.R
 import com.sr.metmuseum.databinding.MainGalleryItemBinding
 import com.sr.metmuseum.databinding.ThumbItemBinding
-import com.sr.metmuseum.util.hide
-import com.sr.metmuseum.util.loadImage
-import com.sr.metmuseum.util.validate
-import com.sr.metmuseum.util.show
+import com.sr.metmuseum.util.*
 
 val galleryDiffUtil = object : DiffUtil.ItemCallback<GalleryItem>() {
     override fun areItemsTheSame(oldItem: GalleryItem, newItem: GalleryItem): Boolean {
@@ -27,7 +24,7 @@ val galleryDiffUtil = object : DiffUtil.ItemCallback<GalleryItem>() {
     }
 }
 
-class GalleryAdapter : ListAdapter<GalleryItem, RecyclerView.ViewHolder>(galleryDiffUtil) {
+class GalleryAdapter(val listener: OnItemClickListener) : ListAdapter<GalleryItem, RecyclerView.ViewHolder>(galleryDiffUtil) {
     abstract class BaseViewHolder(binding: ViewBinding) : RecyclerView.ViewHolder(binding.root) {
         abstract fun bind(item: GalleryItem)
         abstract fun onSuccess()
@@ -115,7 +112,18 @@ class GalleryAdapter : ListAdapter<GalleryItem, RecyclerView.ViewHolder>(gallery
                 throw IllegalArgumentException("Unknown view holder.")
             }
         }
+
+        holder.itemView.clickWithDebounce {
+            val item = getItem(position)
+            if (item.type != DetailViewModel.GalleryType.MAIN) {
+               listener.onItemClick(position)
+            }
+        }
     }
 
     override fun getItemViewType(position: Int) = getItem(position).type.ordinal
+}
+
+interface OnItemClickListener {
+    fun onItemClick(position: Int)
 }

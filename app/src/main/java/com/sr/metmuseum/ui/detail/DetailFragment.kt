@@ -11,7 +11,7 @@ import com.sr.metmuseum.util.observeNonNull
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class DetailFragment : BaseFragment<DetailFragmentBinding>(DetailFragmentBinding::inflate) {
+class DetailFragment : BaseFragment<DetailFragmentBinding>(DetailFragmentBinding::inflate), OnItemClickListener {
 
     override fun inflateBinding(): Class<DetailFragmentBinding> = DetailFragmentBinding::class.java
     override fun setContent(): Int = R.layout.detail_fragment
@@ -38,7 +38,7 @@ class DetailFragment : BaseFragment<DetailFragmentBinding>(DetailFragmentBinding
 
     override fun setUpView() {
         super.setUpView()
-        _galleryAdapter = GalleryAdapter()
+        _galleryAdapter = GalleryAdapter(this)
     }
 
     override fun setUpViewBinding() {
@@ -61,5 +61,9 @@ class DetailFragment : BaseFragment<DetailFragmentBinding>(DetailFragmentBinding
     override fun onDestroyView() {
         super.onDestroyView()
         _galleryAdapter = null
+    }
+
+    override fun onItemClick(position: Int) {
+      viewModel.updateGallery(position)
     }
 }
