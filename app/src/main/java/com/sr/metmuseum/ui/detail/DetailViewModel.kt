@@ -9,6 +9,7 @@ import com.sr.metmuseum.util.swap
 import com.sr.metmuseum.util.toGalleryItems
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -24,18 +25,27 @@ class DetailViewModel @Inject constructor(
     private var _galleryItems = MutableLiveData<List<GalleryItem>>()
     var galleryItems: LiveData<List<GalleryItem>> = _galleryItems
 
+    private var _error = MutableLiveData<Boolean>()
+    val error: LiveData<Boolean> = _error
+
+    private var _isLoading = MutableLiveData(false)
+    val isLoading: LiveData<Boolean> = _isLoading
+
     fun getItemDetails(itemId: Int) {
         viewModelScope.launch(Dispatchers.IO) {
             repository.getDetails(itemId)
+                .onCompletion { _isLoading.postValue(false) }
                 .collect {
                     when (it) {
+                        is Resource.Loading -> { _isLoading.postValue(true) }
                         is Resource.Success -> {
-                            _galleryItems.postValue(it.data?.toGalleryItems())
+                            val items = it.data?.toGalleryItems()
+                            items?.let { _galleryItems.postValue(it) }
+                            _error.postValue(items.isNullOrEmpty())
                         }
                         is Resource.Error -> {
-                            // TODO: Handle error
+                            _error.postValue(true)
                         }
-                        else -> {}
                     }
                 }
         }
@@ -48,9 +58,9 @@ class DetailViewModel @Inject constructor(
 
             it[0] = first.copy(type = GalleryType.THUMB)
             it[position] = itemAtPosition.copy(type = GalleryType.MAIN)
-            it.apply { swap(0, position)  }
+            it.apply { swap(0, position) }
         } ?: emptyList()
 
-       _galleryItems.value = swapped
+        _galleryItems.value = swapped
     }
 }

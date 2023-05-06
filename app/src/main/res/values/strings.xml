@@ -15,4 +15,7 @@
     <string name="city_label">City: </string>
     <string name="wiki_label">Wiki: </string>
     <string name="empty_label">Unknown</string>
+    <string name="alert_title">Error</string>
+    <string name="alert_message">An error occurred or results cannot be displayed. Let\'s go back!</string>
+    <string name="ok">Yes</string>
 </resources>
