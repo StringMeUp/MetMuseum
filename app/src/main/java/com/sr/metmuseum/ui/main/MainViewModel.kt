@@ -1,8 +1,9 @@
 package com.sr.metmuseum.ui.main
 
-import android.os.Parcelable
-import androidx.lifecycle.*
-import com.sr.metmuseum.R
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.viewModelScope
 import com.sr.metmuseum.base.BaseViewModel
 import com.sr.metmuseum.repository.MainRepository
 import com.sr.metmuseum.util.Constants
@@ -10,7 +11,6 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.launch
-import kotlinx.parcelize.Parcelize
 import java.util.concurrent.CancellationException
 import javax.inject.Inject
 
