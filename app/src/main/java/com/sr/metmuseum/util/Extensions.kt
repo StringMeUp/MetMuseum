@@ -1,17 +1,16 @@
 package com.sr.metmuseum.util
 
 import android.graphics.drawable.Drawable
+import android.widget.ImageView
+import androidx.viewbinding.ViewBinding
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.DataSource
 import com.bumptech.glide.load.engine.GlideException
 import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.Target
-import com.sr.metmuseum.databinding.MainGalleryItemBinding
-import com.sr.metmuseum.databinding.ThumbItemBinding
 import com.sr.metmuseum.models.ObjectDetail
 import com.sr.metmuseum.ui.detail.DetailViewModel
 import com.sr.metmuseum.ui.detail.GalleryItem
-import timber.log.Timber
 
 fun ObjectDetail.toGalleryItems(): MutableList<GalleryItem> {
     return GalleryItem(
@@ -45,10 +44,14 @@ private fun GalleryItem.asList(): MutableList<GalleryItem> {
     }.toMutableList()
 }
 
-
-fun MainGalleryItemBinding.getImage(item: GalleryItem){
-    Glide.with(this.primaryImageView)
-        .load(item.primaryImage)
+fun ViewBinding.loadImage(
+    url: String,
+    imageView: ImageView,
+    onSuccess: () -> Unit,
+    onError: () -> Unit,
+) {
+    Glide.with(this.root)
+        .load(url)
         .centerCrop()
         .listener(object : RequestListener<Drawable> {
             override fun onLoadFailed(
@@ -57,8 +60,7 @@ fun MainGalleryItemBinding.getImage(item: GalleryItem){
                 target: Target<Drawable>?,
                 isFirstResource: Boolean,
             ): Boolean {
-                this@getImage.errorTextView.show()
-                this@getImage.progressBar.hide()
+                onSuccess.invoke()
                 return false
             }
 
@@ -69,38 +71,8 @@ fun MainGalleryItemBinding.getImage(item: GalleryItem){
                 dataSource: DataSource?,
                 isFirstResource: Boolean,
             ): Boolean {
-                this@getImage.errorTextView.hide()
-                this@getImage.progressBar.hide()
+                onError.invoke()
                 return false
             }
-        }).into(this@getImage.primaryImageView)
-}
-
-
-fun ThumbItemBinding.getImage(item: GalleryItem){
-    Glide.with(this.thumbImageView)
-        .load(item.primaryImage)
-        .centerCrop()
-        .listener(object : RequestListener<Drawable> {
-            override fun onLoadFailed(
-                e: GlideException?,
-                model: Any?,
-                target: Target<Drawable>?,
-                isFirstResource: Boolean,
-            ): Boolean {
-                this@getImage.progressBar.hide()
-                return false
-            }
-
-            override fun onResourceReady(
-                resource: Drawable?,
-                model: Any?,
-                target: Target<Drawable>?,
-                dataSource: DataSource?,
-                isFirstResource: Boolean,
-            ): Boolean {
-                this@getImage.progressBar.hide()
-                return false
-            }
-        }).into(this@getImage.thumbImageView)
+        }).into(imageView)
 }
