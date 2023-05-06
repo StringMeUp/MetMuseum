@@ -14,7 +14,4 @@ interface Api {
 
     @GET("public/collection/v1/objects/{objectId}")
     suspend fun getObjectDetails(@Path("objectId") objectId: Int): Response<ObjectDetail>
-
-//    https://collectionapi.metmuseum.org/public/collection/v1/search?hasImages=true&q=sunflowers
-//    https://collectionapi.metmuseum.org/public/collection/v1/search?hasImages=true&q=Auguste%20Renoir
 }
