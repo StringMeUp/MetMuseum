@@ -1,21 +1,18 @@
-package com.sr.metmuseum.ui
+package com.sr.metmuseum.ui.main
 
-import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import androidx.navigation.fragment.findNavController
 import com.sr.metmuseum.R
 import com.sr.metmuseum.base.BaseFragment
 import com.sr.metmuseum.databinding.MainFragmentBinding
 import com.sr.metmuseum.util.afterTextChangedEvents
-import com.sr.metmuseum.util.hide
 import com.sr.metmuseum.util.observeNonNull
-import com.sr.metmuseum.util.show
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.FlowPreview
-import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.debounce
-import kotlinx.coroutines.flow.skip
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
@@ -23,7 +20,7 @@ class MainFragment : BaseFragment<MainFragmentBinding>(MainFragmentBinding::infl
 
     override fun inflateBinding(): Class<MainFragmentBinding> = MainFragmentBinding::class.java
     override fun setContent(): Int = R.layout.main_fragment
-    private val viewModel: MainViewModel by activityViewModels()
+    private val viewModel: MainViewModel by viewModels()
 
     private var _idsAdapter: IdsAdapter? = null
     private val idsAdapter: IdsAdapter
@@ -31,10 +28,11 @@ class MainFragment : BaseFragment<MainFragmentBinding>(MainFragmentBinding::infl
 
     override fun setUpView() {
         super.setUpView()
-        _idsAdapter = IdsAdapter()
-        binding.apply {
-            viewmodel = viewModel
-            lifecycleOwner = viewLifecycleOwner
+        setLifecycle()
+        _idsAdapter = IdsAdapter { item ->
+            if (item.type == MainViewModel.ObjectType.ART) {
+                findNavController().navigate(MainFragmentDirections.actionDetail(item))
+            }
         }
     }
 
@@ -42,13 +40,13 @@ class MainFragment : BaseFragment<MainFragmentBinding>(MainFragmentBinding::infl
     override fun setUpViewBinding() {
         super.setUpViewBinding()
         binding.apply {
-            lifecycleScope.launch {
+            viewLifecycleOwner.lifecycleScope.launch {
                 repeatOnLifecycle(Lifecycle.State.STARTED) {
-                    searchView.afterTextChangedEvents().debounce(350)
-                        .collectLatest {
-                            if (it.isNotBlank()) viewModel.searchIds(it.toString())
-                            else viewModel.invalidateSearch()
-                        }
+                    searchView.afterTextChangedEvents().debounce(350).collectLatest {
+                        if (it == viewModel.savedQuery.value) return@collectLatest
+                        if (it.isNotBlank()) viewModel.searchIds(it)
+                        else viewModel.setDefaultInvalidate()
+                    }
                 }
             }
 
@@ -58,13 +56,21 @@ class MainFragment : BaseFragment<MainFragmentBinding>(MainFragmentBinding::infl
 
     override fun setUpViewModelBinding() {
         super.setUpViewModelBinding()
-        viewModel.objectIds.observeNonNull(viewLifecycleOwner) {
-            idsAdapter.differ.submitList(it)
+        viewModel.artItems.observeNonNull(viewLifecycleOwner) {
+            idsAdapter.items = it
         }
     }
 
     override fun onDestroyView() {
+        viewModel.saveQuery(binding.searchView.text.toString())
         super.onDestroyView()
         _idsAdapter = null
+    }
+
+    private fun setLifecycle() {
+        binding.apply {
+            viewmodel = viewModel
+            lifecycleOwner = viewLifecycleOwner
+        }
     }
 }

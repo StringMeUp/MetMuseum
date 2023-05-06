@@ -13,11 +13,15 @@ buildscript {
             retrofit = "2.9.0"
             httpLogging = "4.9.3"
             timber = "5.0.1"
+            safeArgs = "2.5.3"
+            glide = "4.15.1"
+            glideCompiler = "4.13.0"
         }
     }
 
     dependencies {
         classpath "com.google.dagger:hilt-android-gradle-plugin:$hilt"
+        classpath "androidx.navigation:navigation-safe-args-gradle-plugin:$safeArgs"
     }
 }
 

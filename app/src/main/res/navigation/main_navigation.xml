@@ -7,12 +7,26 @@
 
     <fragment
         android:id="@+id/mainFragment"
-        tools:layout="@layout/main_fragment"
-        android:name="com.sr.metmuseum.ui.MainFragment"
-        android:label="MainFragment" />
+        android:name="com.sr.metmuseum.ui.main.MainFragment"
+        android:label="MainFragment"
+        tools:layout="@layout/main_fragment">
+        <action
+            android:id="@+id/action_detail"
+            app:destination="@id/detailFragment"
+            app:enterAnim="@anim/nav_default_enter_anim"
+            app:exitAnim="@anim/nav_default_exit_anim"
+            app:popEnterAnim="@anim/nav_default_pop_enter_anim"
+            app:popExitAnim="@anim/nav_default_pop_exit_anim"
+            app:popUpTo="@layout/main_fragment"
+            app:popUpToInclusive="false" />
+    </fragment>
     <fragment
         android:id="@+id/detailFragment"
-        tools:layout="@layout/detail_fragment"
-        android:name="com.sr.metmuseum.ui.DetailFragment"
-        android:label="DetailFragment" />
+        android:name="com.sr.metmuseum.ui.detail.DetailFragment"
+        android:label="DetailFragment"
+        tools:layout="@layout/detail_fragment" >
+        <argument
+            android:name="artItem"
+            app:argType="com.sr.metmuseum.ui.main.ArtItem" />
+    </fragment>
 </navigation>

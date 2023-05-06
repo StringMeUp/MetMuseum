@@ -1,5 +1,6 @@
 package com.sr.metmuseum.util
 
+import android.os.SystemClock
 import android.text.Editable
 import android.view.View
 import android.widget.EditText
@@ -14,16 +15,30 @@ fun <T> LiveData<T>.observeNonNull(owner: LifecycleOwner, f: (T) -> Unit) {
     this.observe(owner) { t -> t?.let(f) }
 }
 
-fun EditText.afterTextChangedEvents(): Flow<CharSequence> {
-    return callbackFlow<CharSequence> {
+fun EditText.afterTextChangedEvents(): Flow<String> {
+    return callbackFlow {
         val listener = object : Watcher() {
             override fun afterTextChanged(s: Editable?) {
-                s?.let { trySend(it) }
+                s?.let { trySend(it.toString()) }
             }
         }
-        this@afterTextChangedEvents.addTextChangedListener(listener)
+        addTextChangedListener(listener)
         awaitClose { removeTextChangedListener(listener) }
-    }.onStart { emit(text) }
+    }.onStart { emit(text.toString()) }
+}
+
+
+fun View.clickWithDebounce(debounceTime: Long = 500L, action: () -> Unit) {
+    this.setOnClickListener(object : View.OnClickListener {
+        private var lastClickTime: Long = 0
+
+        override fun onClick(v: View) {
+            if (SystemClock.elapsedRealtime() - lastClickTime < debounceTime) return
+            else action()
+
+            lastClickTime = SystemClock.elapsedRealtime()
+        }
+    })
 }
 
 fun View.hide(){

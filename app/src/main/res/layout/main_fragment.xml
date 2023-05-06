@@ -7,7 +7,7 @@
 
         <variable
             name="viewmodel"
-            type="com.sr.metmuseum.ui.MainViewModel" />
+            type="com.sr.metmuseum.ui.main.MainViewModel" />
 
         <import type="android.view.View" />
     </data>
@@ -61,19 +61,6 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             tools:visibility="gone" />
-
-        <TextView
-            android:id="@+id/error_text_view"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_margin="24dp"
-            android:gravity="center"
-            android:textColor="@color/white"
-            android:textSize="24sp"
-            app:layout_constraintBottom_toTopOf="@+id/search_view"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

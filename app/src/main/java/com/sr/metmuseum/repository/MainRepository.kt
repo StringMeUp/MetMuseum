@@ -7,6 +7,6 @@ import javax.inject.Inject
 
 class MainRepository @Inject constructor(private val api: Api) {
 
-    suspend fun search(q: String) = RemoteSource.launchResultFlow { api.searchObjectIds(q) }
-    suspend fun getDetails(id: String) = flow { emit(api.getObjectDetails(id)) }
+    suspend fun search(q: String) = RemoteSource.launchResultFlow { api.searchObjectIds(q = q) }
+    suspend fun getDetails(id: Int) = RemoteSource.launchResultFlow { api.getObjectDetails(id) }
 }

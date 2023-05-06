@@ -3,9 +3,10 @@ package com.sr.metmuseum.models
 import com.google.gson.annotations.SerializedName
 
 data class ObjectDetail(
-    val objectID: Int,
+    @SerializedName("objectID")
+    val objectId: Int,
     val primaryImage: String,
-    val additionalImages: ArrayList<String>,
+    val additionalImages: List<String>?,
     val department: String,
     val objectName: String,
     val title: String,
