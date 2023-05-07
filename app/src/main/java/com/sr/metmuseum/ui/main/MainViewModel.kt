@@ -2,7 +2,6 @@ package com.sr.metmuseum.ui.main
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import com.sr.metmuseum.base.BaseViewModel
 import com.sr.metmuseum.repository.MainRepository
@@ -13,6 +12,10 @@ import com.sr.metmuseum.util.toGalleryItems
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.channels.awaitClose
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.launch
 import java.util.concurrent.CancellationException
@@ -20,8 +23,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class MainViewModel @Inject constructor(
-    private val repository: MainRepository,
-    savedStateHandle: SavedStateHandle,
+    private val repository: MainRepository
 ) : BaseViewModel() {
 
     enum class ObjectType {
@@ -32,8 +34,7 @@ class MainViewModel @Inject constructor(
         MAIN, THUMB
     }
 
-    private var _artItems = savedStateHandle.getLiveData<MutableList<ArtItem>>(Constants.OBJECT_IDS)
-    val artItems: LiveData<MutableList<ArtItem>> = _artItems
+    var flow = flowOf<MutableList<ArtItem>>()
 
     private var _savedQuery = MutableLiveData<String>()
     val savedQuery: LiveData<String> = _savedQuery
@@ -52,7 +53,7 @@ class MainViewModel @Inject constructor(
 
     private var searchJob: Job? = null
 
-    fun setItemId(id: Int){
+    fun setItemId(id: Int) {
         _itemId.value = id
     }
 
@@ -60,42 +61,47 @@ class MainViewModel @Inject constructor(
         _savedQuery.value = q
     }
 
-    fun searchIds(q: String) {
-        searchJob = viewModelScope.launch {
-            repository.search(q)
-                .onCompletion {
-                    _isLoading.postValue(false)
-                }
-                .collect {
-                    when (it) {
-                        is Resource.Loading -> {
-                            _isLoading.postValue(true)
-                        }
-                        is Resource.Success -> {
-                            val items = it.data?.artIds?.map { ArtItem(it, ObjectType.ART) }?.toMutableList()
-                            _artItems.postValue(items ?: ArtItem.empty())
-                        }
-                        is Resource.Error -> {
-                            _artItems.postValue(ArtItem.error())
+    fun searchIds(q: String): Flow<MutableList<ArtItem>> {
+        return callbackFlow {
+            searchJob = viewModelScope.launch {
+                repository.search(q)
+                    .onCompletion {
+                        _isLoading.postValue(false)
+                    }
+                    .collect {
+                        when (it) {
+                            is Resource.Loading -> {
+                                _isLoading.postValue(true)
+                            }
+                            is Resource.Success -> {
+                                val items = it.data?.artIds?.map { ArtItem(it, ObjectType.ART) }?.toMutableList()
+                                trySend(items ?: ArtItem.empty())
+                            }
+                            is Resource.Error -> {
+                                trySend(ArtItem.error())
+                            }
                         }
                     }
-                }
+            }
+
+            awaitClose { searchJob?.cancel(CancellationException("${Constants.DEBUG_INTENDED} Search cancelled.")) }
         }
     }
 
-    /**Detail*/
-    fun setDefaultInvalidate() {
-        _artItems.value = ArtItem.default()
-        searchJob?.cancel(CancellationException("${Constants.DEBUG_INTENDED} Search cancelled."))
+    fun saveTempFlow(flow: MutableList<ArtItem>){
+        this.flow = flowOf(flow)
     }
 
+    /**Detail*/
     fun getItemDetails(id: Int) {
         viewModelScope.launch(Dispatchers.IO) {
             repository.getDetails(id)
                 .onCompletion { _isLoading.postValue(false) }
                 .collect {
                     when (it) {
-                        is Resource.Loading -> { _isLoading.postValue(true) }
+                        is Resource.Loading -> {
+                            _isLoading.postValue(true)
+                        }
                         is Resource.Success -> {
                             val items = it.data?.toGalleryItems()
                             items?.let { _galleryItems.postValue(it) }
@@ -122,12 +128,12 @@ class MainViewModel @Inject constructor(
         _galleryItems.value = swapped
     }
 
-    fun invalidateGallery(){
+    fun invalidateGallery() {
         _galleryItems.value = emptyList()
     }
 
     fun invalidate() {
-       invalidateGallery()
+        invalidateGallery()
         _isLoading.value = false
         _error.value = false
         _itemId.value = null

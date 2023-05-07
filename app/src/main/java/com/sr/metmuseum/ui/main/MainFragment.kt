@@ -9,8 +9,8 @@ import com.sr.metmuseum.R
 import com.sr.metmuseum.base.BaseFragment
 import com.sr.metmuseum.databinding.MainFragmentBinding
 import com.sr.metmuseum.util.afterTextChangedEvents
-import com.sr.metmuseum.util.observeNonNull
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
@@ -37,28 +37,25 @@ class MainFragment : BaseFragment<MainFragmentBinding>(MainFragmentBinding::infl
         }
     }
 
-    @OptIn(FlowPreview::class)
+    @OptIn(FlowPreview::class, ExperimentalCoroutinesApi::class)
     override fun setUpViewBinding() {
         super.setUpViewBinding()
         binding.apply {
             viewLifecycleOwner.lifecycleScope.launch {
                 repeatOnLifecycle(Lifecycle.State.STARTED) {
-                    searchView.afterTextChangedEvents().debounce(350).collectLatest {
-                        if (it == viewModel.savedQuery.value) return@collectLatest
-                        if (it.isNotBlank()) viewModel.searchIds(it)
-                        else viewModel.setDefaultInvalidate()
-                    }
+                    searchView.afterTextChangedEvents()
+                        .flatMapLatest { query ->
+                            if (query == viewModel.savedQuery.value) return@flatMapLatest viewModel.flow
+                            if (query.isBlank()) flowOf(ArtItem.default())
+                            else viewModel.searchIds(query)
+                        }.debounce(350).collectLatest {
+                            idsAdapter.items = it
+                            viewModel.saveTempFlow(it)
+                        }
                 }
             }
 
             recyclerView.adapter = idsAdapter
-        }
-    }
-
-    override fun setUpViewModelBinding() {
-        super.setUpViewModelBinding()
-        viewModel.artItems.observeNonNull(viewLifecycleOwner) {
-            idsAdapter.items = it
         }
     }
 
