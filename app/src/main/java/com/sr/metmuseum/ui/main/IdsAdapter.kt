@@ -29,11 +29,17 @@ class IdsAdapter(private val onItemClick: (ArtItem) -> Unit) :
                 inflater,
                 parent,
                 false))
-            MainViewModel.ObjectType.DEFAULT.ordinal -> DefaultViewHolder(DefaultItemBinding.inflate(
+
+            MainViewModel.ObjectType.EMPTY.ordinal -> EmptyStateViewHolder(OtherItemBinding.inflate(
                 inflater,
                 parent,
                 false))
-            else -> EmptyStateViewHolder(OtherItemBinding.inflate(inflater, parent, false))
+            else -> {
+                DefaultViewHolder(DefaultItemBinding.inflate(
+                    inflater,
+                    parent,
+                    false))
+            }
         }
     }
 

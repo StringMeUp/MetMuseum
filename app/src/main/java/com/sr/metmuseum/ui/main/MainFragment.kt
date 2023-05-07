@@ -1,5 +1,6 @@
 package com.sr.metmuseum.ui.main
 
+import androidx.core.view.isVisible
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
@@ -28,7 +29,6 @@ class MainFragment : BaseFragment<MainFragmentBinding>(MainFragmentBinding::infl
 
     override fun setUpView() {
         super.setUpView()
-        setLifecycle()
         _idsAdapter = IdsAdapter { item ->
             if (item.type == MainViewModel.ObjectType.ART) {
                 viewModel.setItemId(item.id)
@@ -45,12 +45,13 @@ class MainFragment : BaseFragment<MainFragmentBinding>(MainFragmentBinding::infl
                 repeatOnLifecycle(Lifecycle.State.STARTED) {
                     searchView.afterTextChangedEvents()
                         .flatMapLatest { query ->
-                            if (query == viewModel.savedQuery.value) return@flatMapLatest viewModel.flow
+                            if (query == viewModel.getQuery()) return@flatMapLatest viewModel.getSavedFlow()
                             if (query.isBlank()) flowOf(ArtItem.default())
                             else viewModel.searchIds(query)
                         }.debounce(350).collectLatest {
+                            binding.progressBar.isVisible = it.any { it.isLoading }
                             idsAdapter.items = it
-                            viewModel.saveTempFlow(it)
+                            viewModel.setSavedFlow(it)
                         }
                 }
             }
@@ -63,12 +64,5 @@ class MainFragment : BaseFragment<MainFragmentBinding>(MainFragmentBinding::infl
         viewModel.saveQuery(binding.searchView.text.toString())
         super.onDestroyView()
         _idsAdapter = null
-    }
-
-    private fun setLifecycle() {
-        binding.apply {
-            viewmodel = viewModel
-            lifecycleOwner = viewLifecycleOwner
-        }
     }
 }

@@ -4,6 +4,7 @@
     <string name="error_state_gallery">Ops…Couldn\'t load image.</string>
     <string name="empty_state">Maybe try something sensible? Pal!</string>
     <string name="default_state">Enter a search term below.</string>
+    <string name="loading_state">Enter a search term below.</string>
     <string name="search_hint">Search for something…</string>
     <string name="thumbnail_image_cd">Thumbnail image.</string>
     <string name="title_label">Title: </string>

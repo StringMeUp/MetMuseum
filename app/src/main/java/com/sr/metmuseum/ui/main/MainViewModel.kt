@@ -27,17 +27,16 @@ class MainViewModel @Inject constructor(
 ) : BaseViewModel() {
 
     enum class ObjectType {
-        ART, ERROR, EMPTY, DEFAULT
+        ART, ERROR, EMPTY, DEFAULT, LOADING
     }
 
     enum class GalleryType {
         MAIN, THUMB
     }
 
-    var flow = flowOf<MutableList<ArtItem>>()
-
-    private var _savedQuery = MutableLiveData<String>()
-    val savedQuery: LiveData<String> = _savedQuery
+    private var savedQuery: String? = null
+    private var searchJob: Job? = null
+    private var savedFlow: Flow<MutableList<ArtItem>>? = null
 
     private var _isLoading = MutableLiveData(false)
     val isLoading: LiveData<Boolean> = _isLoading
@@ -51,27 +50,30 @@ class MainViewModel @Inject constructor(
     private var _itemId = MutableLiveData<Int?>()
     val itemId: LiveData<Int?> = _itemId
 
-    private var searchJob: Job? = null
-
     fun setItemId(id: Int) {
         _itemId.value = id
     }
 
     fun saveQuery(q: String) {
-        _savedQuery.value = q
+        savedQuery = q
+    }
+
+    fun getQuery(): String? {
+        return savedQuery
+    }
+
+    fun getSavedFlow(): Flow<MutableList<ArtItem>> {
+        return savedFlow ?: flowOf(ArtItem.default())
     }
 
     fun searchIds(q: String): Flow<MutableList<ArtItem>> {
         return callbackFlow {
             searchJob = viewModelScope.launch {
                 repository.search(q)
-                    .onCompletion {
-                        _isLoading.postValue(false)
-                    }
                     .collect {
                         when (it) {
                             is Resource.Loading -> {
-                                _isLoading.postValue(true)
+                                trySend(ArtItem.loading(true))
                             }
                             is Resource.Success -> {
                                 val items = it.data?.artIds?.map { ArtItem(it, ObjectType.ART) }?.toMutableList()
@@ -88,8 +90,8 @@ class MainViewModel @Inject constructor(
         }
     }
 
-    fun saveTempFlow(flow: MutableList<ArtItem>){
-        this.flow = flowOf(flow)
+    fun setSavedFlow(flow: MutableList<ArtItem>){
+        this.savedFlow = flowOf(flow)
     }
 
     /**Detail*/
